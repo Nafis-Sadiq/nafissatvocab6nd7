@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>nafisSATvocab</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1d2433;--mu:#6b7385;--ac:#4f46e5;--ac2:#eef0ff;--ok:#16a34a;--okb:#e7f8ed;--bad:#dc2626;--badb:#fdeaea;--bd:#e3e6ef}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1220;--card:#181c2f;--tx:#e8eaf3;--mu:#98a0b8;--ac:#8b84ff;--ac2:#23284a;--ok:#4ade80;--okb:#12301e;--bad:#f87171;--badb:#3a1818;--bd:#2a3050}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--bd)}
+h1{font-size:18px;margin:0}h1 span{color:var(--ac)}
+main{max-width:640px;margin:0 auto;padding:16px 16px calc(90px + env(safe-area-inset-bottom))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px}
+.mu{color:var(--mu);font-size:14px}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{width:100%;padding:14px;border:0;border-radius:12px;background:var(--ac);color:#fff;font-weight:600;font-size:17px}
+.btn.sec{background:var(--ac2);color:var(--ac)}
+.pill{border:1px solid var(--bd);background:var(--card);border-radius:99px;padding:6px 12px;font-size:13px}
+.bar{height:8px;border-radius:9px;background:var(--ac2);overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);border-radius:9px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}.grid b{display:block;font-size:22px}
+.opt{display:block;width:100%;text-align:left;padding:14px;margin:8px 0;border-radius:12px;border:1.5px solid var(--bd);background:var(--card);font-size:16px}
+.opt.ok{border-color:var(--ok);background:var(--okb)}.opt.no{border-color:var(--bad);background:var(--badb)}
+.stem{font-size:13px;color:var(--mu);margin-bottom:8px}.txt{font-size:18px;line-height:1.55}
+.blank{border-bottom:2px solid var(--ac);padding:0 18px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:14px;font-weight:600;color:var(--mu)}nav button.on{color:var(--ac)}
+.tag{display:inline-block;font-size:12px;background:var(--ac2);color:var(--ac);border-radius:6px;padding:2px 8px;margin-top:6px}
+.row{padding:12px 0;border-bottom:1px solid var(--bd)}.row:last-child{border:0}
+.row .top{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;margin-bottom:8px}
+.fb{margin-top:10px;padding:12px;border-radius:12px;background:var(--ac2)}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:20px}
+</style></head><body>
+<header><h1>nafis<span>SAT</span>vocab</h1><button class="pill" id="hb" onclick="togHide()"></button></header>
+<main id="app"></main>
+<nav><button id="n1" onclick="go('p')">Practice</button><button id="n2" onclick="go('g')">Progress</button></nav>
+<script>
+const SEC={BS:["Branches of Science",50],SS:["Branches of Social Science & Humanities",50],KT:["Key Science-Related Terms",50],MC:["Make a Claim",51],SC:["Support a Claim",51],QC:["Question a Claim",51],TA:["Think About",51],CT:["Coming Together",51],MA:["Moving Apart",51],DC:["Draw a Conclusion",51],PS:["Provide Sources",51],LA:["Large Amount",51],SA:["Small Amount",51],DD:["Different, Diverse",51],NS:["Noticeable, Striking",51],HL:["Harmless",51],IB:["Inborn",51],GV:["Additional General Vocabulary",52],SM:["Common Second Meanings","53-54"],WN:["Words that Look Negative But Aren't",55]};
+// code|word|meaning|context sentence (___ = blank)
+const RAW=`BS|Astronomy|study of stars and planets|Tracking a distant comet through a telescope is work for students of ___.
+BS|Botany|study of plants|Her fascination with ferns and orchids led her to major in ___.
+BS|Cognitive Science|science of the brain and mind (like neuroscience)|Researchers who scan brains to learn how people form memories work in ___.
+BS|Ecology|study of the natural world|To learn how removing wolves reshaped a whole forest, she turned to ___.
+BS|Entomology|study of insects|The beetle and butterfly collection belongs to a specialist in ___.
+BS|Genetics|study of genes|Tracing eye color across three generations is a problem in ___.
+BS|Geology|study of rocks|Reading the layers of rock in a canyon wall is a job for ___.
+BS|Ornithology|study of birds|Banding migrating warblers each spring is typical work in ___.
+BS|Paleontology|study of fossils|Brushing dust off a dinosaur rib, she was glad she'd chosen ___.
+BS|Zoology|study of animals|Observing how lions and zebras behave on the savanna falls under ___.
+SS|Anthropology|study of human behavior and social organization, usually on a large scale|Comparing kinship, language, and burial customs across many societies is work for ___.
+SS|Archaeology|study of past human activity through excavating physical objects|Digging up pottery shards to understand an ancient village is the heart of ___.
+SS|Economics|study of monetary systems|Why prices rise when too much money is printed is a question for ___.
+SS|Ethnography|study of individual cultures|Living a year with one fishing community to document its customs is ___.
+SS|Folklore|study of traditional stories and myths|Collecting the tales grandparents told about a river spirit is ___.
+SS|Sociology|study of everyday human social behavior at a specific time|Surveying how teenagers use social media today is a project in ___.
+SS|Excavation|digging up (physical objects)|The ___ of the buried temple took three seasons of careful work.
+KT|Advantageous|providing an advantage|Holding the high ground was ___ for the defenders.
+KT|Charge|in electricity, positive or negative|A proton carries a positive electric ___.
+KT|Control group|group in which the variable being tested is not changed|To judge the drug's effect, they gave sugar pills to the ___.
+KT|Empirical|relying on hard data|The claim rested on ___ evidence from hundreds of trials, not on opinion.
+KT|Hierarchy|system of rank (adj. hierarchical)|In the army's strict ___, a captain must obey a major.
+KT|Egalitarian|treating everyone as equal; opposite of hierarchical|Unlike the rigid royal court, the band was ___, with no one outranking anyone.
+KT|Isotope|alternate form of an element|Carbon-14 is an unstable ___ of carbon used to date fossils.
+KT,GV|Indigenous|native|Kangaroos are ___ to Australia.
+KT,GV|Inhibit|prevent, impede (e.g., a response)|The chemical was found to ___ the enzyme's activity.
+KT|Innovative|new and revolutionary|The ___ design replaced the old engine with something no one had tried.
+KT|Metabolism|process of converting food to energy|A fast ___ lets some people burn through lunch within hours.
+KT|Microbial|relating to microscopic organisms|Soil samples showed rich ___ life invisible to the naked eye.
+KT|Pigment|color|Chlorophyll is the green ___ in leaves.
+KT|Predisposed|having a tendency toward|Because of her family history, she is ___ to the illness.
+KT|Regenerate|regrow|A starfish can ___ a lost arm.
+KT|Replicate|repeat an experiment and obtain the same results|Other labs will try to ___ the study; if they get the same results, it gains credibility.
+KT|Saturate|become completely soaked with|Days of rain will ___ the ground until it can hold no more water.
+KT|Stimulus|something that provokes a specific response|The bell was the ___ that made the dog salivate.
+KT|Symbiosis|interaction between two organisms living close together that benefits both (adj. symbiotic)|Bees get nectar while pollinating flowers, a classic case of ___.
+KT|Taxonomy|classification system|Linnaeus's ___ sorts organisms into kingdoms, genera, and species.
+KT|Trait|characteristic|Curly hair is an inherited ___.
+KT|Velocity|speed|The ball's ___ was clocked at ninety miles per hour.
+MC|Advance|put forward (a claim)|In her essay, the historian will ___ a bold new theory about the city's decline.
+MC|Posit|put forward as a basis for argument|Physicists ___ that a hidden particle explains the missing mass.
+MC|Proffer|offer, put forward|Rather than stay silent, he chose to ___ an explanation.
+MC|Speculate|guess without firm evidence|Without data, critics can only ___ about why sales fell.
+MC|Hypothesize|propose a testable explanation|Scientists will ___ that warmer water changed the fish's migration, then test it.
+SC|Bolster|strengthen, support|New fossil finds will ___ the theory that birds descended from dinosaurs.
+SC|Buttress|support, reinforce|She cited three studies to ___ her argument.
+SC|Substantiate|back up with evidence|Without records, he could not ___ his claim.
+QC|Ambivalence|mixed or uncertain feelings|Her ___ about the job showed in her long pauses; she wanted it and didn't.
+QC|Skepticism|doubt|The audience greeted the miracle cure with ___.
+QC|Rebut|argue against|The lawyer rose to ___ the witness's testimony point by point.
+QC|Refute|prove wrong|A single clear counterexample can ___ a sweeping claim.
+TA|Grapple with|struggle to deal with or understand|Students often ___ difficult ideas before they finally click.
+TA|Mull over|think about carefully|She asked for a week to ___ the offer before answering.
+TA|Ruminate about|think deeply about|He would often ___ his old mistake for hours.
+CT|Converge|come together|The two rivers ___ just north of the city.
+CT|Integrate|combine into a whole|The app aims to ___ calendars, email, and notes in one place.
+CT|Intersect|cross or overlap|The two roads ___ at the old mill.
+MA|Diverge|move apart|At the fork, the trail seems to ___, sending hikers in two directions.
+DC|Infer|conclude from evidence|From the muddy footprints, we can ___ that someone came in through the garden.
+DC|Surmise|guess based on limited evidence|Seeing the dark clouds, he could only ___ that the game would be canceled.
+PS|Attribute|credit to a source|Journalists must ___ every quotation to the person who said it.
+PS|Cite|name as a source|Always ___ your sources at the end of the paper.
+LA|Multitude|a large number|A ___ of stars appeared as the sky darkened.
+LA|Plethora|an excessive amount|With a ___ of toppings on the menu, choosing was hard.
+LA|Profusion|abundance|Wildflowers grew in ___ across the meadow.
+SA|Dearth|scarcity|A ___ of rainfall left the reservoirs nearly empty.
+SA|Paucity|smallness of amount|The ___ of evidence made the conclusion weak.
+DD|Disparate|essentially different|The report combines ___ sources, from poems to tax records.
+DD|Heterogeneous|made of diverse parts|The city's ___ population speaks dozens of languages.
+DD|Eclectic|drawing from varied sources|Her ___ playlist jumped from jazz to punk to opera.
+NS|Conspicuous|easily seen|The bright orange coat made him ___ in the gray crowd.
+NS|Distinctive|clearly characteristic|The owl's ___ call made it easy to identify at night.
+NS|Salient|most important, prominent|The most ___ feature of the report was its surprising conclusion.
+HL|Benign|harmless|Doctors said the tumor was ___ and needed no treatment.
+HL,WN|Innocuous|harmless|The comment seemed ___, yet it hurt her deeply.
+IB,GV|Inherent|inborn, existing in something by definition|Some risk is ___ in any investment.
+IB,GV,WN|Innate|inborn, natural|Babies have an ___ ability to recognize human faces.
+IB,GV,WN|Intrinsic|inborn, a natural part of|The painting's ___ value lies in its beauty, not its price.
+GV|Adept|skilled|After years of practice, she became ___ at repairing watches.
+GV|Adversary|opponent|The champion shook hands with her longtime ___.
+GV|Align|support or adopt the position of|The senator chose to ___ herself with the reform movement.
+GV|Authentic|genuine|Experts confirmed that the signature was ___, not forged.
+GV|Centrality|state of being central or essential|The ___ of water to life makes it the focus of the study.
+GV|Complement|complete or perfect|The tart sauce will ___ the rich meat perfectly.
+GV|Comprehensive|thorough, complete (not "understandable")|The ___ report covered every aspect of the project, leaving no gaps.
+GV|Contingent|dependent upon|The loan is ___ on her getting the job.
+GV|Confer|give, grant|The university will ___ an honorary degree on the author.
+GV|Corollary|a statement that logically follows from a proven argument|If all squares are rectangles, a ___ is that every square has four right angles.
+GV|Contemporary|current|Unlike Shakespeare, ___ novelists write in today's idiom.
+GV|Cultivate|grow, raise (e.g., crops)|Farmers in the valley ___ rice and barley.
+GV|Displace|force from a home or habitat|The flood will ___ thousands of families from their villages.
+GV|Disposition|personality|Her cheerful ___ made her popular with coworkers.
+GV|Ideology|belief system|The regime's ___ shaped every aspect of daily life.
+GV|Impede|prevent; get in the way of|Fallen trees will ___ rescue crews trying to reach the town.
+GV|Judicial|related to the law|The ___ branch interprets laws and decides court cases.
+GV|Marginal|unimportant|The policy had only a ___ effect on prices, barely noticeable.
+GV|Mitigate|make less severe|Planting trees can ___ the damage from flooding.
+GV|Preliminary|occurring before the main event|The ___ results were promising, but the full study is still underway.
+GV|Prevail|win|Despite long odds, the underdog team managed to ___.
+GV|Prevalent|widespread; generally accepted (also prevailing)|The ___ belief of the era was that the earth was flat.
+GV|Reciprocate|respond to an action with the same action|When neighbors bring you food, it's polite to ___ later.
+GV|Rudimentary|very basic|The early telescope was ___, little more than two lenses in a tube.
+GV|Successor|person who inherits another's position|The king named his eldest daughter as his ___.
+SM|Afford|grant (e.g., an opportunity)|The scholarship will ___ her the opportunity to study abroad.
+SM|Appreciate|recognize the merits of; or increase in value|Investors hope the land will ___ over the next decade.
+SM|Arrest|to stop|Doctors acted quickly to ___ the spread of the infection.
+SM|Assume|take on responsibility for, acquire|She will ___ the role of director next month.
+SM|Austerity|policy of reducing spending on luxuries or non-essentials|The government's ___ measures cut funding for non-essential projects.
+SM|Badger|pester or annoy|Reporters continued to ___ the mayor with questions after the scandal.
+SM|Bent|liking for (penchant, predilection)|Her artistic ___ showed early, with sketches filling every notebook.
+SM|Capacity|ability|He has a remarkable ___ for remembering names.
+SM|Chance|to attempt|Climbers who ___ the icy ridge risk a dangerous fall.
+SM|Channel|direct toward a specific purpose|The charity will ___ donations into building schools.
+SM|Check|restrain, control, or reduce|Vaccination helped ___ the spread of the disease.
+SM|Coin|invent (e.g., a phrase)|Who first decided to ___ the term "smartphone"?
+SM|Compromise|endanger or make vulnerable|A single lie can ___ a reporter's reputation.
+SM|Constitution|build, physical makeup|The athlete's sturdy ___ helped him recover quickly from injury.
+SM|Conviction|certainty, determination|She spoke with such ___ that the crowd believed her.
+SM|Couch|hide, express indirectly|He tried to ___ his criticism in polite, gentle language.
+SM|Discriminating|able to make fine distinctions|A ___ critic can tell the finest tea from a merely good one.
+SM|Doctor|tamper with|The editor was fired for trying to ___ the photograph.
+SM|Economy|thrift; use of few words|Poets prize ___ of language, saying much in few words.
+SM|Embroider|falsify, make up stories about|He tended to ___ his tales of adventure with details that never happened.
+SM|Execute|carry out|The team must ___ the plan precisely.
+SM|Exploit|make use of (not negative)|Smart gardeners ___ every bit of available sunlight.
+SM|Facility|ability to do something easily|She has a remarkable ___ for languages, picking up new ones in weeks.
+SM|Foil|put a stop to|Security guards managed to ___ the robbery.
+SM|Grave|serious (gravity = seriousness)|The doctor delivered the ___ news in a quiet voice.
+SM|Grill|question intensely and repeatedly|Detectives continued to ___ the suspect for hours.
+SM|Hamper|get in the way of, hinder|Heavy snow will ___ efforts to reach the stranded hikers.
+SM|Harbor|possess, hold (e.g., a belief)|He continued to ___ doubts about the plan.
+SM|Hobble|prevent, impede|Strict regulations threaten to ___ small businesses.
+SM|Plastic|able to be changed, malleable|Children's brains are highly ___, quickly adapting to new experiences.
+SM|Provoke|elicit (e.g., a reaction)|The film's ending is certain to ___ strong reactions.
+SM|Realize|achieve (a goal)|After years of training, she finally managed to ___ her dream of competing.
+SM|Reconcile|bring together opposing or contradictory ideas|The theory struggles to ___ the two conflicting sets of data.
+SM|Relay|pass on to someone else|Please ___ this message to the rest of the team.
+SM|Relate|tell, give an account of (a story)|The old sailor loved to ___ stories of storms at sea.
+SM|Reservations|misgivings|Despite her ___ about the plan, she agreed to try it.
+SM|Reserve|hold off on|The judge chose to ___ judgment until all the evidence was in.
+SM|Ruffled|flustered, nonplussed|Normally calm, he looked ___ after the surprise question.
+SM|Sap|drain (e.g., of energy)|Long meetings ___ my energy by afternoon.
+SM|Scrap|eliminate|The committee voted to ___ the outdated policy.
+SM|Shelve|reject or discard (an idea or proposal); also "table"|The board will ___ the proposal for lack of funding.
+SM|Solvent|able to pay all debts|After the restructuring, the company was ___ again.
+SM|Sound|firm, stable, reliable, valid|Her ___ argument stood up to every objection.
+SM|Spare|unadorned, very plain|The room's ___ decor consisted of a bed and a plain table.
+SM|Severe|unadorned, very plain|The ___ white walls and bare floor gave the chapel a stark look.
+SM|Static|unchanging|Unlike the evolving language, the ancient text remained ___.
+SM|Sustain|withstand|The bridge was built to ___ heavy loads and strong winds.
+SM|Uniform|constant, unvarying|The temperature stayed ___ all day, never rising or falling.
+SM,WN|Unqualified|absolute|The film was an ___ success, praised by every critic.
+SM|Upset|interfere with an expected outcome|The underdog hoped to ___ the champion.
+WN|Critic|writer of commentary, positive or negative|The film ___ praised the director's bold use of color.
+WN|Discern|recognize or distinguish; perceptive|In the fog, he could barely ___ the outline of the ship.
+WN|Ineffable|indescribable, beyond words|The ___ beauty of the sunrise left her speechless.
+WN|Infallible|unable to be wrong|No scientist is ___; even careful experts make errors.
+WN|Ingenious|clever, brilliant|Her ___ solution fixed the problem using only a paperclip.
+WN|Ingenuous|naive|His ___ trust in the stranger left him open to being cheated.
+WN|Inimitable|unique, one-of-a-kind|The singer's ___ voice has never been matched by anyone.
+WN|Invaluable|having immense value, priceless|Her advice proved ___ to the new team.
+WN|Unassuming|modest|Though the actress was ___, never mentioning her awards, colleagues knew she had won three.`;
+// DSAT-style passages
+const DS=[["Eclectic","Early reviewers found the novel impossible to place in a single genre: it mixed a ghost story, courtroom drama, and recipe book. One critic called the author's tastes ___, noting how freely she borrowed from unrelated traditions."],
+["Replicate","Although the first trial's results seemed promising, the team knew a single study could not settle the matter. The claim would be widely trusted only if other laboratories could ___ the findings."],
+["Austerity","Because the city's budget was thin, the mayor proposed ___ measures: freezing hiring and postponing nonessential projects until revenue recovered."],
+["Refute","Though the senator's tone was gentle, her point was blunt: the new report would not merely question the agency's claims but ___ them, offering data showing each to be false."],
+["Symbiosis","Marine biologists found that the clownfish defends the anemone, which in turn shields the fish from predators. Such a mutually beneficial relationship is known as ___."]];
+const CL=[["Hamper","Hobble","Impede","Inhibit","Arrest","Check","Foil"],["Scrap","Shelve"],["Spare","Severe"],["Relay","Relate"],["Execute","Realize"],["Doctor","Embroider"],["Ruffled","Ambivalence"],["Intrinsic","Innate","Inherent"]];
+const OPEN=["BS","SS"];
+const W=RAW.trim().split("\n").map((l,i)=>{const [s,w,d,t]=l.split("|");return{id:i,s:s.split(","),w,d,t}});
+const byW={};W.forEach(x=>byW[x.w]=x);
+const DSM={};DS.forEach(([w,t])=>DSM[byW[w].id]=t);
+const $=s=>document.querySelector(s);
+let S;try{S=JSON.parse(localStorage.getItem("nsv")||"null")}catch(e){}
+S=S||{m:{},log:{},hide:false};
+/* ===== CROSS-DEVICE SYNC =====
+   Paste your Firebase Realtime Database URL below, e.g.
+   "https://your-project-default-rtdb.firebaseio.com"   (see setup steps I gave you) */
+const SYNC_URL="";
+/* ALTERNATIVE (no Firebase): JSONBin.io. Fill both and leave SYNC_URL empty.
+   JB_ID = 6aedf100ffd5d16053ac6af0, JB_KEY = $2a$10$VCc43MuvtLn.sx4XER7jP.ucGqAjORZE/sZ7cxw4d6qL08mi/XnFG (Read + Update).
+   If you only have a Master Key, change JB_HDR to "X-Master-Key" (less safe in a public page). */
+const JB_ID="",JB_KEY="",JB_HDR="X-Access-Key";
+const JB=!!(JB_ID&&JB_KEY),ON=()=>JB||!!(SYNC_URL&&code);
+const JB_URL="https://api.jsonbin.io/v3/b/"+JB_ID;
+let code=null;try{code=localStorage.getItem("nsv_code")}catch(e){}
+let syncMsg="Not synced yet",pushT=null;
+const save=()=>{try{localStorage.setItem("nsv",JSON.stringify(S))}catch(e){}
+ if(ON()&&!pushT)pushT=setTimeout(()=>{pushT=null;push()},JB?60000:5000)};
+const ep=()=>SYNC_URL.replace(/\/$/,"")+"/nsv/"+code+".json";
+function merge(r){
+ if(!r)return;
+ for(const k in (r.m||{})){const a=S.m[k];if(!a||r.m[k].n>a.n)S.m[k]=r.m[k]}
+ for(const d in (r.log||{})){const a=S.log[d]||(S.log[d]={s:0,q:0,c:0}),b=r.log[d];a.s=Math.max(a.s,b.s||0);a.q=Math.max(a.q,b.q||0);a.c=Math.max(a.c,b.c||0)}
+ try{localStorage.setItem("nsv",JSON.stringify(S))}catch(e){}
+}
+async function push(){
+ if(!ON())return;
+ const body=JSON.stringify({m:S.m,log:S.log});
+ try{const r=JB?await fetch(JB_URL,{method:"PUT",headers:{"Content-Type":"application/json",[JB_HDR]:JB_KEY},body}):await fetch(ep(),{method:"PUT",body});if(!r.ok)throw 0;syncMsg="Synced "+new Date().toLocaleTimeString()}
+ catch(e){syncMsg="Offline, will retry"}
+}
+async function pull(){
+ if(!ON())return;
+ try{const r=JB?await fetch(JB_URL+"/latest",{headers:{[JB_HDR]:JB_KEY}}):await fetch(ep());if(!r.ok)throw 0;const j=await r.json();merge(JB?j.record:j);await push()}
+ catch(e){syncMsg="Offline, will retry"}
+ if(tab==="p"&&!(ses&&!ses.done))render();
+}
+function genCode(){const a=new Uint8Array(14),c="abcdefghjkmnpqrstuvwxyz23456789";crypto.getRandomValues(a);return Array.from(a,x=>c[x%c.length]).join("")}
+function setCode(c){code=c;try{localStorage.setItem("nsv_code",c)}catch(e){}}
+function newCode(){setCode(genCode());push().then(render)}
+function enterCode(){const c=(prompt("Enter your sync code:")||"").trim().toLowerCase();if(c.length<12)return;setCode(c);pull()}
+function unlink(){if(confirm("Stop syncing on this device? Your progress stays here.")){code=null;try{localStorage.removeItem("nsv_code")}catch(e){}render()}}
+function syncCard(){
+ if(JB)return '<div class="card"><b>Sync on</b> <span class="mu">· '+syncMsg+'</span><div class="mu" style="margin:6px 0 10px">Your progress syncs automatically on every device that opens this site.</div><button class="pill" onclick="pull()">Sync now</button></div>';
+ if(!SYNC_URL)return '<div class="card"><b>Sync</b><div class="mu">Not configured yet: set SYNC_URL at the top of the script.</div></div>';
+ if(!code)return '<div class="card"><b>Sync across devices</b><div class="mu" style="margin:4px 0 10px">Create a code on one device, then enter it on your others.</div><button class="btn sec" onclick="newCode()">Create sync code</button><button class="btn sec" style="margin-top:8px" onclick="enterCode()">I already have a code</button></div>';
+ return '<div class="card"><b>Sync on</b> <span class="mu">· '+syncMsg+'</span><div style="margin:8px 0;font:600 18px monospace;word-break:break-all">'+code+'</div><div class="mu">Enter this code on your other devices. Keep it private; it is the only key to your progress.</div><div style="display:flex;gap:8px;margin-top:10px"><button class="pill" onclick="pull()">Sync now</button><button class="pill" onclick="unlink()">Unlink</button></div></div>';
+}
+document.addEventListener("visibilitychange",()=>{document.hidden?push():pull()});
+const today=()=>new Date().toLocaleDateString("en-CA");
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const lv=w=>(S.m[w.id]||{}).l||0;
+const sec=w=>w.s.map(c=>SEC[c][0]+" (p. "+SEC[c][1]+")").join(" • ");
+let tab="p",ses=null,timer=null,filt="all";
+function go(t){tab=t;render()}
+function togHide(){S.hide=!S.hide;save();render()}
+function logT(){return S.log[today()]||(S.log[today()]={s:0,q:0,c:0})}
+function streak(){let n=0,d=new Date();const k=x=>x.toLocaleDateString("en-CA");if(((S.log[k(d)]||{}).s||0)<900)d.setDate(d.getDate()-1);while(((S.log[k(d)]||{}).s||0)>=900){n++;d.setDate(d.getDate()-1)}return n}
+function mk(w){
+ const ds=DSM[w.id],r=Math.random();
+ const type=ds&&r<.5?"ds":(r<.7?"ctx":"def");
+ const open=w.s.some(c=>OPEN.includes(c));
+ const bad=new Set(W.filter(x=>CL.some(c=>c.includes(w.w)&&c.includes(x.w))).map(x=>x.id));
+ const pool=W.filter(x=>x!==w&&!bad.has(x.id)&&(open||!x.s.some(c=>w.s.includes(c))));
+ const o=shuf([w,...shuf(pool).slice(0,3)]);
+ return{w,o,type};
+}
+function pick(){
+ const rec=ses.recent;
+ const c=W.filter(w=>!rec.includes(w.id)).map(w=>({w,k:Math.pow(6-lv(w),2)+(S.m[w.id]?0:6)}));
+ let t=c.reduce((a,b)=>a+b.k,0),r=Math.random()*t;
+ for(const x of c){r-=x.k;if(r<=0)return x.w}return c[0].w;
+}
+function nextQ(){const w=pick();ses.recent.push(w.id);if(ses.recent.length>12)ses.recent.shift();ses.cur=mk(w);ses.pick=null;render()}
+function start(){ses={left:900,q:0,c:0,recent:[],miss:{},done:false};clearInterval(timer);timer=setInterval(tick,1000);nextQ()}
+function tick(){
+ if(tab!=="p"||!ses||ses.done||document.hidden)return;
+ ses.left--;logT().s++;save();
+ const e=$("#tm");if(e)e.textContent=fmt(ses.left);
+ if(ses.left<=0)finish();
+}
+function finish(){ses.done=true;clearInterval(timer);render()}
+const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+function ans(i){
+ if(ses.pick!==null)return;
+ const q=ses.cur,ok=q.o[i]===q.w;ses.pick=i;ses.q++;
+ const m=S.m[q.w.id]||(S.m[q.w.id]={l:0,n:0,c:0});
+ m.n++;const L=logT();L.q++;
+ if(ok){m.c++;ses.c++;L.c++;m.l=Math.min(5,m.l+1)}else{m.l=Math.max(0,m.l-2);ses.miss[q.w.id]=1}
+ save();render();
+}
+function blank(t){return t.replace("___",'<span class="blank"></span>')}
+function renderQ(){
+ const q=ses.cur,a=ses.pick!==null;
+ let stem,body;
+ if(q.type==="def"){stem="Which word matches this meaning?";body=q.w.d.replace(/\s*\(.*?\)/g,"")}
+ else{stem="Which choice completes the text with the most logical and precise word or phrase?";body=blank(q.type==="ds"?DSM[q.w.id]:q.w.t)}
+ let h='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span class="timer" id="tm">'+fmt(ses.left)+'</span><span class="mu">'+ses.c+"/"+ses.q+' correct</span></div></div>';
+ h+='<div class="card"><div class="stem">'+stem+'</div><div class="txt">'+body+"</div>";
+ q.o.forEach((o,i)=>{let c="opt";if(a){if(o===q.w)c+=" ok";else if(i===ses.pick)c+=" no"}h+='<button class="'+c+'" onclick="ans('+i+')">'+String.fromCharCode(65+i)+". "+o.w+"</button>"});
+ if(a){h+='<div class="fb"><b>'+(q.o[ses.pick]===q.w?"Correct! ":"Not quite. ")+q.w.w+"</b> — "+q.w.d+(S.hide?"":'<br><span class="tag">'+sec(q.w)+"</span>")+"</div>";
+  h+='<button class="btn" style="margin-top:12px" onclick="nextQ()">Next</button>'}
+ h+='</div><button class="btn sec" onclick="if(confirm(\'End this session?\'))finish()">End session</button>';
+ $("#app").innerHTML=h;
+}
+function renderSum(){
+ const t=Object.keys(ses.miss).map(i=>W[i]);
+ let h='<div class="card"><h2 style="margin-top:0">Session complete</h2><div class="grid"><div><b>'+ses.q+'</b><span class="mu">questions</span></div><div><b>'+ses.c+'</b><span class="mu">correct</span></div><div><b>'+(ses.q?Math.round(100*ses.c/ses.q):0)+'%</b><span class="mu">accuracy</span></div></div></div>';
+ if(t.length){h+='<div class="card"><b>Review these words</b>';t.forEach(w=>h+='<div class="row"><div class="top">'+w.w+'</div><div class="mu">'+w.d+(S.hide?"":'<br><span class="tag">'+sec(w)+"</span>")+"</div></div>");h+="</div>"}
+ h+='<button class="btn" onclick="ses=null;render()">Done</button>';
+ $("#app").innerHTML=h;
+}
+function stats(){let n=0,m=0,l=0,sum=0;W.forEach(w=>{const v=lv(w);sum+=v;if(!S.m[w.id])n++;else if(v>=4)m++;else l++});return{n,m,l,p:Math.round(100*sum/(5*W.length))}}
+function renderHome(){
+ const t=S.log[today()]||{s:0,q:0,c:0},st=stats(),done=t.s>=900;
+ $("#app").innerHTML='<div class="card"><b>Today\'s practice</b><div class="mu" style="margin:4px 0 10px">'+Math.floor(t.s/60)+" of 15 min"+(done?" — goal reached 🎉":"")+'</div><div class="bar"><i style="width:'+Math.min(100,t.s/9)+'%"></i></div><div class="mu" style="margin-top:10px">🔥 Streak: '+streak()+" day"+(streak()===1?"":"s")+" · "+t.q+" questions today</div></div>"+
+ '<button class="btn" onclick="start()">Start 15-minute session</button>'+
+ '<div class="card" style="margin-top:14px"><b>Overall mastery: '+st.p+'%</b><div class="bar" style="margin:8px 0 14px"><i style="width:'+st.p+'%"></i></div><div class="grid"><div><b>'+st.n+'</b><span class="mu">new</span></div><div><b>'+st.l+'</b><span class="mu">learning</span></div><div><b>'+st.m+'</b><span class="mu">mastered</span></div></div></div>'+
+ syncCard()+'<p class="mu">'+W.length+" words · weak words appear more often. Each right answer adds a level (max 5); a wrong answer drops two.</p>";
+}
+function renderProg(){
+ const st=stats();
+ let list=W.filter(w=>filt==="all"||w.s.includes(filt)).sort((a,b)=>lv(a)-lv(b)||a.w.localeCompare(b.w));
+ let h='<div class="card"><b>Overall: '+st.p+'% mastered</b><div class="bar" style="margin-top:8px"><i style="width:'+st.p+'%"></i></div></div>';
+ if(!S.hide){h+='<select onchange="filt=this.value;render()"><option value="all">All sections</option>'+Object.keys(SEC).map(c=>'<option value="'+c+'"'+(filt===c?" selected":"")+">"+SEC[c][0]+"</option>").join("")+"</select>"}else filt="all";
+ h+='<div class="card">';
+ list.forEach(w=>{const m=S.m[w.id]||{n:0,c:0},v=lv(w);
+  h+='<div class="row" onclick="this.querySelector(\'.dt\').hidden^=1"><div class="top"><span>'+w.w+'</span><span class="mu">'+v*20+'%</span></div><div class="bar" style="margin-top:6px"><i style="width:'+v*20+'%"></i></div><div class="dt mu" hidden style="margin-top:6px">'+w.d+" · "+m.c+"/"+m.n+" correct"+(S.hide?"":'<br><span class="tag">'+sec(w)+"</span>")+"</div></div>"});
+ $("#app").innerHTML=h+"</div>";
+}
+function render(){
+ $("#hb").textContent="Sections: "+(S.hide?"hidden":"shown");
+ $("#n1").className=tab==="p"?"on":"";$("#n2").className=tab==="g"?"on":"";
+ if(tab==="g")renderProg();
+ else if(ses&&ses.done)renderSum();
+ else if(ses)renderQ();
+ else renderHome();
+ scrollTo(0,0);
+}
+render();pull();
+</script></body></html>
